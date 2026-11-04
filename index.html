@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>墨西哥旅行工作台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap" id="home">
+  <header class="panel head">
+    <div class="headT">
+      <h1>墨西哥旅行</h1>
+      <span class="stat" id="stat"></span>
+    </div>
+    <p class="sub">从墨西哥城（Ciudad de México）出发 · 点地点名字看交通、行程、美食和酒店</p>
+    <div class="pills" id="pills" role="group" aria-label="筛选"></div>
+  </header>
+
+  <div id="list" style="display:grid;gap:18px"></div>
+
+  <details class="mapbox" id="mapbox">
+    <summary>地图总览</summary>
+    <div class="atlas">
+      <figure class="plate"><figcaption>墨西哥中部 · Centro de México</figcaption><svg id="mapC" role="img" aria-label="墨西哥中部地点示意图"></svg></figure>
+      <figure class="plate"><figcaption>尤卡坦半岛 · Península de Yucatán</figcaption><svg id="mapY" role="img" aria-label="尤卡坦半岛地点示意图"></svg></figure>
+    </div>
+  </details>
+
+  <footer>
+    <span>评分和评论数来自 Google 地图（2026 年 10 月 26 日查询），点地图图标会打开 Google 地图里的位置。</span>
+    <span>封面照片来自维基共享资源（Wikimedia Commons），作者和授权写在各地点的资料来源里。</span>
+    <span>交通、路线、美食、酒店的内容在逐步补充中。营业时间和价格出发前以官网为准。</span>
+  </footer>
+</div>
+<div class="wrap" id="placeView" hidden></div>
+<!-- 数据（按顺序加载）：地点 → 简介 → 攻略；最后是页面逻辑 -->
+<script src="data/places.js"></script>
+<script src="data/intros.js"></script>
+<script src="data/guides.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

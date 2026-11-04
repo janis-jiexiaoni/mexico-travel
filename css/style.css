@@ -1,0 +1,208 @@
+/* 墨西哥旅行工作台样式。首页：一块顶部面板（标题、完成度、筛选）→ 三列地点卡片（照片 + 四个板块按钮）→ 地图总览。
+   地点页：大图 → 简介 → 吸顶的四个板块标签 → 点评。 */
+:root{
+  --bg:#F7F3EC; --card:#FFFFFF; --ink:#3B2F27; --muted:#9A8D82; --line:#EEE5D9;
+  --teal:#4DB6A7; --teal-ink:#2F8F82; --teal-soft:#E4F4F1; --red:#E2574C; --red-soft:#FCE9E6; --red-ink:#B83A30;
+  --sand:#F6E6CB; --star:#B8730A; --sky-soft:#E4F1FB; --sky-line:#C6DFF3; --sky-ink:#2D6696; --sea:#7FCFD3; --ochre:#E9B567; --rose:#F3B5B7; --night:#2C3D7A;
+  --shadow:0 2px 0 rgba(59,47,39,.04),0 6px 20px rgba(59,47,39,.06);
+  --font:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C1915; --card:#26221D; --ink:#F1E9DF; --muted:#A99C8F; --line:#38322B;
+  --teal:#5CC6B7; --teal-ink:#7ED9CC; --teal-soft:#1F3532; --red:#F07368; --red-soft:#3A2522; --red-ink:#F48A80;
+  --sand:#4A3D2B; --star:#F0B44C; --sky-soft:#1D2E3C; --sky-line:#2D4558; --sky-ink:#9CC8EE; --sea:#2E5E62; --ochre:#7A5A2B; --rose:#6A3F44; --night:#25335F;
+  --shadow:0 2px 0 rgba(0,0,0,.2),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C1915; --card:#26221D; --ink:#F1E9DF; --muted:#A99C8F; --line:#38322B;
+  --teal:#5CC6B7; --teal-ink:#7ED9CC; --teal-soft:#1F3532; --red:#F07368; --red-soft:#3A2522; --red-ink:#F48A80;
+  --sand:#4A3D2B; --star:#F0B44C; --sky-soft:#1D2E3C; --sky-line:#2D4558; --sky-ink:#9CC8EE; --sea:#2E5E62; --ochre:#7A5A2B; --rose:#6A3F44; --night:#25335F;
+  --shadow:0 2px 0 rgba(0,0,0,.2),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-block:24px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+.panel{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:16px 24px}
+@media (max-width:620px){.panel{padding:16px}}
+
+/* header：标题、完成度、说明、筛选合成一块 */
+.head{display:grid;gap:8px}
+.headT{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+.head h1{margin:0;font-size:22px;font-weight:900;letter-spacing:.01em}
+.head .sub{margin:0;font-size:13px;color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pill{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer;font-size:14px;white-space:nowrap;flex:none}
+.pill[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700}
+.stat{font-size:13px;color:var(--muted)}
+.stat b{color:var(--teal-ink);font-size:17px;margin:0 2px}
+/* 手机上筛选按钮排一行，放不下左右滑 */
+@media (max-width:620px){.pills{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}.pills::-webkit-scrollbar{display:none}}
+.spacer{flex:1}
+.cta{border:0;border-radius:12px;background:var(--teal);color:#fff;font-weight:700;padding:12px 24px;cursor:pointer}
+.ghost{border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px;padding:8px 4px}
+
+/* cards */
+.section-t{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:4px;margin:8px 4px 0}
+.section-t h2{margin:0;font-size:18px;font-weight:900;flex:none;white-space:nowrap}
+.section-t span{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.pic{position:relative;aspect-ratio:16/10;background:var(--sand);overflow:hidden}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pic svg{width:100%;height:100%;display:block}
+.rate{position:absolute;top:8px;right:8px;background:var(--card);border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;box-shadow:var(--shadow)}
+.body{padding:16px;display:grid;gap:8px;flex:1}
+.meta{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+.kind{background:var(--sand);color:var(--ink);font-weight:700;border-radius:6px;padding:0 8px;font-size:12px;white-space:nowrap;flex:none}
+.meta span:not(.kind){min-width:0}
+.card h3{margin:0;font-size:17px;font-weight:900}
+.card h3 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
+.desc{margin:0;font-size:14px;color:var(--ink);opacity:.85}
+.src{display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px;font-size:13px;color:var(--muted);padding-bottom:12px;border-bottom:1.5px dashed var(--line)}
+.gmap{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink)}
+.gmap svg{width:18px;height:18px;flex:none}
+.gmap .star{color:var(--star)}
+.gmap em{font-style:normal;color:var(--muted)}
+.gmap:hover b{text-decoration:underline}
+.off{color:var(--teal-ink);text-decoration:underline;text-underline-offset:3px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+.act{border:1.5px solid var(--sky-line);background:var(--sky-soft);color:var(--sky-ink);border-radius:12px;padding:8px;cursor:pointer;font-size:14px;font-weight:700;display:flex;gap:8px;align-items:center;justify-content:center}
+.act:hover{border-color:var(--sky-ink)}
+.act.has{font-weight:700}
+/* 还没写的板块：虚线、浅底、灰字，并带「整理中」小字 */
+.act.soon{border-style:dashed;border-color:var(--line);background:transparent;color:var(--muted)}
+.act.soon:hover{border-color:var(--muted)}
+.act.soon{flex-wrap:wrap;row-gap:0;line-height:1.3}
+.act.soon i{flex-basis:100%;text-align:center;font-style:normal;font-size:12px;font-weight:400}
+.act svg{width:16px;height:16px}
+
+/* place page */
+.name{color:inherit;text-decoration:none}
+.name:hover{color:var(--teal-ink);text-decoration:underline;text-underline-offset:3px}
+.back{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:8px 16px;cursor:pointer;font-weight:700;justify-self:start}
+.hero{position:relative;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:21/9;background:var(--sand)}
+@media (max-width:620px){.hero{aspect-ratio:4/3}}
+.hero img,.hero svg{width:100%;height:100%;object-fit:cover;display:block}
+.hero .cap{position:absolute;left:0;right:0;bottom:0;padding:48px 24px 24px;background:linear-gradient(transparent,rgba(20,14,8,.72));color:#fff}
+.hero .cap h1{margin:0;font-size:clamp(26px,4.4vw,42px);font-weight:900;line-height:1.1}
+.hero .cap div{font-size:16px;opacity:.92;margin-top:4px}
+.pmeta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:14px}
+.intro{display:grid;gap:12px}
+.intro h2{margin:0;font-size:18px;font-weight:900}
+.intro .lead{font-size:16px;margin:0}
+.intro p{margin:0}
+.intro .story{display:grid;gap:8px;border-left:3px solid var(--teal);padding-left:16px}
+.intro ul{margin:0;padding-left:16px;color:var(--ink)}
+/* 资料来源：默认收起 */
+.srcs{font-size:12px;color:var(--muted)}
+.srcs summary{cursor:pointer;font-weight:700;padding:4px 0;width:max-content}
+.srcs .lst{display:flex;flex-wrap:wrap;gap:4px 12px;padding-top:4px}
+.srcs p{margin:4px 0 0}
+/* 板块标签：滚动时贴在屏幕顶部；手机上排一行、用短名字 */
+.ptabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;position:sticky;top:0;z-index:5;background:var(--card);padding:8px 0;margin-top:-8px;border-bottom:1px solid var(--line)}
+.ptabs .s{display:none}
+@media (max-width:620px){.ptabs .act{padding-inline:4px;gap:4px}.ptabs .f{display:none}.ptabs .s{display:inline}}
+.ptabs .act[aria-selected="true"]{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700}
+.gh{margin:8px 0 0;font-size:15px;font-weight:900;color:var(--teal-ink)}
+/* 攻略开头的重要提醒（GUIDE 里的 {warn:"…"}）：红色加粗 */
+.warn{margin:0;color:var(--red-ink);font-weight:700}
+.gitem{border:1.5px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:4px}
+.gtop{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+.gr{font-size:13px;color:var(--muted)}.gr .star{color:var(--star);margin-right:4px}.gr em{font-style:normal}
+.gp{font-size:12px;background:var(--sand);border-radius:6px;padding:0 8px}
+.gnote{font-size:14px}
+.rate-in{color:var(--star);font-weight:700;white-space:nowrap}
+.loopmap{margin:4px 0 0;background:var(--sky-soft);border-radius:14px;padding:8px 8px 4px}
+.loopmap svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto}
+/* 路线图上的小岛（女人岛、科苏梅尔）：深蓝色 */
+.lm-isl path{fill:var(--sky-ink)}
+.lm-isl .lm-palm{fill:none;stroke:var(--sky-ink);stroke-width:2;stroke-linecap:round}
+.lm-t.lm-isl-t{fill:var(--sky-ink)}
+.loopmap figcaption{font-size:12px;color:var(--muted);padding:4px 4px 0}
+.lm-r{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round}
+.lm-d{stroke-dasharray:8 6}
+.lm-p{fill:var(--red);stroke:var(--card);stroke-width:3}
+.lm-q{fill:var(--muted)}
+.lm-t{font-size:max(15px,calc(13px * var(--k,0)));font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--sky-soft);stroke-width:4px;stroke-linejoin:round}
+.lm-s{font-size:max(12px,calc(12px * var(--k,0)));font-weight:400;fill:var(--muted)}
+/* 手机上路段的距离时间和「途经」小字不显示（交通卡片里都有），只留地名 */
+@media (max-width:620px){.lm-seg,.lm-via{display:none}}
+.todo{background:var(--bg);border:1.5px dashed var(--line);border-radius:14px;padding:16px;color:var(--muted);font-size:14px}
+.todo b{color:var(--ink)}
+.blk{display:grid;gap:12px}
+.blk ul{margin:0;padding-left:16px}
+
+/* route timeline */
+.toggle{display:inline-flex;flex-wrap:wrap;gap:8px}
+.toggle button{border:1.5px solid var(--sky-line);background:var(--sky-soft);color:var(--sky-ink);border-radius:12px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700}
+.toggle button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700}
+.tl{list-style:none;margin:8px 0 0;padding:0}
+.stop{display:grid;grid-template-columns:64px minmax(0,1fr);gap:0 12px}
+.stop .when{font-weight:900;color:var(--teal-ink);font-size:14px;padding-top:1px}
+.stop .what{border-left:2px solid var(--line);padding:0 0 16px 16px;position:relative}
+.stop .what::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--card);border:2.5px solid var(--teal)}
+.stop.leg .what::before{background:var(--muted);border-color:var(--muted);width:8px;height:8px;left:-5px;top:8px}
+.stop.leg .when{color:var(--muted);font-weight:400;font-size:12px}
+.stop h4{margin:0;font-size:15px}
+.stop p{margin:4px 0 0;font-size:14px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+@media (max-width:560px){.modes{grid-template-columns:1fr}}
+.mode{background:var(--bg);border-radius:14px;padding:12px;font-size:13px}
+.mode b{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.mode .t{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+
+.small{font-size:13px;color:var(--muted)}
+
+/* map */
+details.mapbox{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:4px 24px}
+@media (max-width:620px){details.mapbox{padding:4px 16px}}
+details.mapbox summary{cursor:pointer;font-weight:900;padding:12px 0;font-size:16px}
+.atlas{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;padding-bottom:16px;align-items:start}
+@media (max-width:860px){.atlas{grid-template-columns:1fr}}
+.plate{background:var(--teal-soft);border-radius:14px;overflow:hidden;position:relative;margin:0}
+.plate figcaption{position:absolute;left:8px;top:8px;font-size:12px;background:var(--card);padding:1px 8px;border-radius:999px}
+.plate svg{display:block;width:100%;height:auto}
+.pin{cursor:pointer}
+.pin text{font-size:12px;fill:var(--ink);paint-order:stroke;stroke:var(--teal-soft);stroke-width:3px;stroke-linejoin:round}
+/* 手机上的地图总览：编号圆点 + 图下面的编号列表（js/app.js 的 numPins / mapList） */
+.pin text.num{fill:var(--ink);stroke:none;font-weight:700}
+@media (max-width:620px){.plate figcaption{position:static;display:inline-block;margin:8px 8px 0}}
+.maplist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.maplist button{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;border:0;border-radius:12px;background:none;padding:4px 8px;text-align:left;cursor:pointer;font-size:14px}
+.maplist button:hover{background:var(--bg)}
+.maplist b{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:2px solid var(--red);font-size:12px}
+.maplist small{font-size:13px;color:var(--muted)}
+footer{font-size:12px;color:var(--muted);padding:0 4px;display:grid;gap:4px}
+/* 点评一下 */
+.review{display:grid;gap:12px}
+.review h2{margin:0;font-size:18px;font-weight:900}
+#revAvg{font-size:14px;margin-left:8px}
+.stars{display:flex;align-items:center;gap:2px}
+.stars button{border:0;background:none;padding:0 2px;font-size:28px;line-height:1;cursor:pointer;color:var(--line)}
+.stars button[aria-pressed="true"]{color:var(--star)}
+#starTxt{margin-left:8px;font-size:13px;color:var(--muted)}
+.review textarea{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);resize:vertical}
+.review textarea::placeholder{color:var(--muted)}
+.review textarea:focus{outline:none;border-color:var(--teal)}
+.revbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.revbar .note{margin:0}
+#revList{display:grid;gap:8px}
+.rev{border:1.5px solid var(--line);border-radius:14px;padding:12px;font-size:14px;display:grid;gap:2px}
+.revtop{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.revtop b{color:var(--ink)}
+.revtop .ghost{margin-left:auto;font-size:13px;padding:0}
+body{margin:0}
+
+/* 手机上可点区域至少 44px（外观基本不变，只加大能点到的范围） */
+@media (max-width:620px){
+  .pill,.act,.back,.toggle button,.cta{min-height:44px}
+  .gmap,.src .off,.pmeta .off{display:inline-flex;align-items:center;min-height:44px}
+  .card h3 .name{display:inline-block;padding-block:9px;margin-block:-9px}
+  .stars button{min-width:44px;min-height:44px}
+  .srcs summary{padding-block:12px;min-height:44px}
+}
