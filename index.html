@@ -22,13 +22,12 @@
 
   <div id="list" style="display:grid;gap:18px"></div>
 
-  <details class="mapbox" id="mapbox">
-    <summary>地图总览</summary>
-    <div class="atlas">
-      <figure class="plate"><figcaption>墨西哥中部 · Centro de México</figcaption><svg id="mapC" role="img" aria-label="墨西哥中部地点示意图"></svg></figure>
-      <figure class="plate"><figcaption>尤卡坦半岛 · Península de Yucatán</figcaption><svg id="mapY" role="img" aria-label="尤卡坦半岛地点示意图"></svg></figure>
-    </div>
-  </details>
+  <section class="mapbox" id="mapbox">
+    <h2>地图总览</h2>
+    <figure class="plate"><svg id="mapMX" role="img" aria-label="墨西哥全国地图：22 个地点的位置，可以放大看更多地点"></svg></figure>
+    <div class="mapjump" role="group" aria-label="地图快速跳转"><button class="pill zb" data-mz="out" aria-label="缩小">−</button><button class="pill zb" data-mz="in" aria-label="放大">+</button><button class="pill" data-mz="all">全国</button><button class="pill" data-mz="near">墨城周边</button><button class="pill" data-mz="city">墨城市内</button><button class="pill" data-mz="yuc">尤卡坦半岛</button></div>
+    <p class="note">放大能看到更多地点：点上面的按钮、点 +，或双指放大；点红点打开这个地点的攻略。</p>
+  </section>
 
   <footer>
     <span>评分和评论数来自 Google 地图（2026 年 10 月 26 日查询），点地图图标会打开 Google 地图里的位置。</span>

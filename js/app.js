@@ -82,7 +82,7 @@ function render(){
     html+=`<section><div class="section-t"><h2>${REG[rk].name}</h2><span>${REG[rk].sub} · ${list.length} 个</span></div><div class="grid" style="margin-top:12px">${list.map(card).join("")}</div></section>`;
   }
   $("#list").innerHTML=html;
-  if($("#mapbox").open) drawMaps();
+  drawMaps();
 }
 
 /* ---------- place page ---------- */
@@ -260,7 +260,7 @@ function route(){
     drawPlace(); $("#home").hidden=true; $("#placeView").hidden=false;
     if(scrollToGuide){ scrollToGuide=false; requestAnimationFrame(()=>document.getElementById("guide")?.scrollIntoView({block:"start"})); } else window.scrollTo(0,0);
   } else {
-    cur=null; $("#placeView").hidden=true; $("#home").hidden=false;
+    cur=null; $("#placeView").hidden=true; $("#home").hidden=false; drawMaps();
     if(lastCard){ requestAnimationFrame(()=>document.getElementById("card-"+lastCard)?.scrollIntoView({block:"center"})); }
   }
 }
@@ -284,68 +284,111 @@ document.addEventListener("click",e=>{
 
 
 /* ---------- maps ---------- */
-const MX=[[-117.1,32.5],[-114.7,32.7],[-111.1,31.3],[-108.2,31.3],[-108.2,31.8],[-106.5,31.8],[-104.9,30.6],[-104.5,29.6],[-103.1,29],[-102.4,29.8],[-101.4,29.8],[-100.3,28.3],[-99.5,27.5],[-99.1,26.4],[-97.5,25.9],[-97.4,24.5],[-97.8,22.3],[-97.2,20.6],[-96.1,19.2],[-94.8,18.5],[-94.4,18.2],[-92.6,18.6],[-91.6,18.6],[-90.7,19.4],[-90.4,21],[-89.6,21.3],[-87.4,21.55],[-86.8,21.1],[-87.1,20.6],[-87.5,20.2],[-87.6,19.5],[-87.5,19],[-88.3,18.5],[-89.1,17.8],[-90.9,17.8],[-90.98,17.25],[-91.4,17.25],[-90.4,16.1],[-91.7,16.07],[-92.2,15.3],[-92.2,14.5],[-93.4,15.6],[-94.6,16.2],[-95.2,15.9],[-96.5,15.65],[-98.5,16.3],[-99.9,16.85],[-101.6,17.65],[-102.2,17.95],[-103.5,18.3],[-104.3,19.1],[-105.3,20.4],[-105.25,21.5],[-105.8,22.6],[-106.4,23.2],[-107.5,24.5],[-108.5,25.4],[-109.2,26.3],[-109.9,27],[-110.9,27.9],[-111.6,28.9],[-112.2,29.4],[-112.9,30.3],[-113.1,31.2],[-114.6,31.7],[-114.5,30],[-113.6,28.9],[-112.8,27.7],[-111.9,26.4],[-110.7,24.3],[-109.4,23.2],[-110,22.9],[-110.3,23.6],[-111.6,24.5],[-112.2,25.8],[-113.2,26.8],[-114.1,27.6],[-114.3,28.6],[-115.7,29.8],[-116.6,31.6],[-117.1,32.5]];
-const NEIGHBOR=[[-88.3,18.5],[-88.1,18],[-88.2,17.5],[-88.3,16],[-89.2,15.9],[-92.2,14.5],[-92.2,15.3],[-91.7,16.07],[-90.4,16.1],[-91.4,17.25],[-90.98,17.25],[-90.9,17.8],[-89.1,17.8]];
-const COZ=[[-86.99,20.55],[-86.75,20.6],[-86.73,20.3],[-86.98,20.32]];
+/* 国界轮廓来自 Natural Earth 1:50m（公有领域），简化到约 0.06° 精度；MX 含主要海岛（科苏梅尔等） */
+const MX=[[[-117.13,32.53],[-114.72,32.72],[-114.84,32.51],[-111.04,31.32],[-108.21,31.33],[-108.21,31.78],[-106.45,31.77],[-106.15,31.45],[-104.92,30.58],[-104.62,29.85],[-104.4,29.57],[-103.26,29],[-102.89,29.22],[-102.73,29.64],[-102.34,29.86],[-101.38,29.74],[-100.75,29.18],[-100.3,28.33],[-99.51,27.55],[-99.46,27.06],[-99.11,26.45],[-97.38,25.87],[-97.15,25.96],[-97.22,25.59],[-97.51,25.01],[-97.74,23.76],[-97.75,22.94],[-97.84,22.51],[-97.76,22.11],[-97.31,21.56],[-97.41,21.27],[-97.38,21.57],[-97.75,22.03],[-97.64,21.6],[-97.12,20.61],[-96.46,19.87],[-96.29,19.34],[-95.78,18.81],[-95.92,18.82],[-95.63,18.69],[-95.7,18.77],[-95.18,18.7],[-94.8,18.51],[-94.55,18.17],[-94.19,18.2],[-93.55,18.43],[-92.88,18.47],[-92.44,18.68],[-91.97,18.72],[-91.88,18.64],[-91.91,18.53],[-91.53,18.46],[-91.28,18.62],[-91.34,18.9],[-91.44,18.89],[-90.74,19.35],[-90.69,19.73],[-90.49,19.95],[-90.48,20.56],[-90.35,21.01],[-89.82,21.27],[-88.88,21.41],[-88.47,21.57],[-88.01,21.6],[-87.25,21.45],[-87.19,21.55],[-87.37,21.57],[-87.03,21.59],[-86.82,21.42],[-86.77,21.15],[-86.93,20.79],[-87.42,20.23],[-87.44,19.86],[-87.69,19.64],[-87.65,19.55],[-87.42,19.58],[-87.66,19.35],[-87.66,19.26],[-87.5,19.29],[-87.85,18.27],[-88.06,18.52],[-88.07,18.83],[-88.3,18.47],[-88.52,18.45],[-88.81,17.97],[-89.13,17.97],[-89.16,17.81],[-90.99,17.82],[-90.99,17.25],[-91.41,17.26],[-90.42,16.39],[-90.45,16.07],[-91.74,16.07],[-92.2,15.28],[-92.07,15.07],[-92.24,14.55],[-93.92,16.05],[-94.37,16.28],[-94.43,16.23],[-94,16.02],[-94.66,16.2],[-94.62,16.35],[-94.75,16.29],[-94.9,16.42],[-95.02,16.28],[-94.8,16.21],[-95.13,16.18],[-95.46,15.97],[-96.51,15.65],[-97.18,15.91],[-97.75,15.97],[-98.14,16.21],[-98.52,16.3],[-98.76,16.53],[-99.69,16.72],[-100.85,17.2],[-101.6,17.65],[-101.92,17.96],[-102.7,18.06],[-103.44,18.33],[-103.91,18.83],[-104.94,19.31],[-105.48,19.98],[-105.67,20.39],[-105.26,20.58],[-105.33,20.75],[-105.51,20.81],[-105.24,21.12],[-105.21,21.49],[-105.43,21.62],[-105.65,21.99],[-105.65,22.33],[-105.79,22.63],[-106.4,23.2],[-106.94,23.88],[-107.76,24.47],[-107.53,24.36],[-107.51,24.49],[-107.95,24.61],[-108.28,25.08],[-108.05,25.07],[-108.7,25.38],[-108.79,25.54],[-109.03,25.48],[-109.07,25.55],[-108.89,25.73],[-109.08,25.62],[-109.3,25.63],[-109.43,26.03],[-109.2,26.31],[-109.12,26.25],[-109.28,26.53],[-109.48,26.71],[-109.75,26.7],[-109.94,27.08],[-110.28,27.16],[-110.48,27.32],[-110.62,27.65],[-110.53,27.86],[-111.12,27.97],[-111.47,28.38],[-111.68,28.47],[-112.16,29.02],[-112.22,29.27],[-112.38,29.35],[-112.41,29.54],[-112.74,29.99],[-113.11,30.79],[-113.05,31.18],[-113.62,31.35],[-113.76,31.56],[-113.95,31.63],[-114,31.53],[-114.15,31.51],[-114.93,31.9],[-114.79,31.65],[-114.88,31.16],[-114.63,30.51],[-114.63,30.16],[-114.37,29.83],[-113.76,29.37],[-113.5,28.93],[-113.38,28.95],[-113.32,28.81],[-113.21,28.8],[-113.09,28.51],[-112.87,28.42],[-112.73,27.83],[-112.33,27.52],[-112.19,27.19],[-112,27.08],[-111.86,26.68],[-111.7,26.58],[-111.8,26.88],[-111.57,26.71],[-111.29,25.79],[-111.03,25.53],[-110.69,24.87],[-110.73,24.59],[-110.66,24.34],[-110.37,24.1],[-110.26,24.34],[-109.42,23.48],[-109.5,23.16],[-110.01,22.89],[-110.36,23.6],[-111.68,24.56],[-111.8,24.54],[-112.07,24.84],[-112.07,25.57],[-112.38,26.21],[-113.02,26.58],[-113.16,26.95],[-113.27,26.79],[-113.6,26.72],[-113.84,26.97],[-114.45,27.22],[-114.54,27.43],[-114.99,27.74],[-115.04,27.84],[-114.57,27.78],[-114.3,27.87],[-114.3,27.78],[-114.07,27.68],[-114.16,27.92],[-114.27,27.93],[-114.05,28.43],[-114.94,29.35],[-115.67,29.76],[-115.81,29.96],[-115.82,30.3],[-116,30.41],[-116.06,30.8],[-116.3,30.97],[-116.33,31.2],[-116.66,31.56],[-116.72,31.73],[-116.62,31.85],[-116.85,32],[-117.06,32.34]],[[-86.94,20.3],[-87.02,20.38],[-86.98,20.49],[-86.83,20.56],[-86.76,20.55],[-86.81,20.47]],[[-113.16,29.05],[-113.58,29.41],[-113.59,29.57],[-113.51,29.56],[-113.37,29.34],[-113.2,29.3],[-113.18,29.13]],[[-115.17,28.07],[-115.35,28.1],[-115.27,28.34],[-115.15,28.17]],[[-112.2,29.01],[-112.28,28.77],[-112.51,28.85],[-112.47,29.17],[-112.29,29.24],[-112.25,29.13]],[[-112.06,24.55],[-112.3,24.79],[-112.13,25.22],[-112.2,24.84],[-112.07,24.58]]];
+const NEIGHBOR=[[[-92.24,14.55],[-92.07,15.07],[-92.2,15.28],[-91.74,16.07],[-90.45,16.07],[-90.42,16.39],[-91.41,17.26],[-90.99,17.25],[-90.99,17.82],[-89.16,17.81],[-89.24,15.89],[-88.6,15.76],[-88.59,15.95],[-88.23,15.73],[-89.14,15.07],[-89.17,14.61],[-89.57,14.39],[-89.55,14.24],[-90.05,13.9],[-90.1,13.74],[-90.61,13.93],[-91.38,13.99],[-91.82,14.23]],[[-89.16,17.81],[-89.13,17.97],[-88.81,17.97],[-88.52,18.45],[-88.3,18.47],[-88.35,18.36],[-88.13,18.35],[-88.09,18.23],[-88.27,17.61],[-88.2,17.52],[-88.31,16.63],[-88.4,16.49],[-88.7,16.25],[-88.89,15.89],[-89.23,15.89],[-89.17,17.57]]];
 const NS="http://www.w3.org/2000/svg";
 function mk(svg,b,W){const kx=Math.cos((b.s+b.n)/2*Math.PI/180),k=W/((b.e-b.w)*kx),H=Math.round((b.n-b.s)*k);svg.setAttribute("viewBox",`0 0 ${W} ${H}`);return{W,H,k,xy:(lo,la)=>[(lo-b.w)*kx*k,(b.n-la)*k],b};}
 function el(t,a,p){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);p&&p.appendChild(n);return n;}
 const poly=(m,pts)=>pts.map((p,i)=>(i?"L":"M")+m.xy(p[0],p[1]).map(v=>v.toFixed(1)).join(",")).join("")+"Z";
-function baseMap(svg,m){svg.innerHTML="";el("path",{d:poly(m,MX),fill:"var(--card)",stroke:"var(--line)","stroke-width":1.5},svg);el("path",{d:poly(m,NEIGHBOR),fill:"var(--card)",opacity:.5},svg);el("path",{d:poly(m,COZ),fill:"var(--card)"},svg);}
-function pin(svg,m,p,label,o={}){
-  const [x,y]=m.xy(p.lon,p.lat), g=el("g",{class:"pin",tabindex:0,role:"button","aria-label":label},svg);
-  el("circle",{cx:x,cy:y,r:o.r||7,fill:"var(--red)",stroke:"var(--card)","stroke-width":2.5},g);
-  const dx=o.dx??11,t=el("text",{x:x+dx,y:y+(o.dy??4),"text-anchor":dx<0?"end":"start"},g);t.textContent=label;
-  const go=()=>openPlace(o.target||p.id);
-  g.addEventListener("click",go);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});
-}
-const esShort=p=>(p.es||p.cn).split("·")[0].trim();
-const isPhone=()=>matchMedia("(max-width:620px)").matches;
-/* 手机上图会缩小到一半左右，地名放不下：改成带编号的圆点，图下面放编号列表。
-   圆点挤在一起时互相推开，再用细线连回真实位置。k = 图缩小的倍数，保证显示出来的数字不小于 12px */
-function numPins(svg,m,items){
-  const k=m.W/(svg.getBoundingClientRect().width||m.W),r=11*k,gap=3*k;
-  const q=items.map(it=>{const [x,y]=m.xy(it.p.lon,it.p.lat);return{x,y,cx:x,cy:y};});
-  for(let n=0;n<300;n++){let moved=false;
-    for(let i=0;i<q.length;i++)for(let j=i+1;j<q.length;j++){const a=q[i],b=q[j];let dx=b.cx-a.cx,dy=b.cy-a.cy,d=Math.hypot(dx,dy);
-      if(d<2*r+gap){if(d<.01){dx=0;dy=1;d=1;}const s=(2*r+gap-d)/2/d;a.cx-=dx*s;a.cy-=dy*s;b.cx+=dx*s;b.cy+=dy*s;moved=true;}}
-    for(const p of q){p.cx=Math.min(m.W-r-gap,Math.max(r+gap,p.cx));p.cy=Math.min(m.H-r-gap,Math.max(r+gap,p.cy));}
-    if(!moved) break;}
-  for(const p of q) if(Math.hypot(p.cx-p.x,p.cy-p.y)>r*.6){el("line",{x1:p.x,y1:p.y,x2:p.cx,y2:p.cy,stroke:"var(--red)","stroke-width":1.5*k},svg);el("circle",{cx:p.x,cy:p.y,r:2.5*k,fill:"var(--red)"},svg);}
-  items.forEach((it,i)=>{const p=q[i],g=el("g",{class:"pin",tabindex:0,role:"button","aria-label":`${i+1} ${it.es} ${it.cn}`},svg);
-    el("circle",{cx:p.cx,cy:p.cy,r,fill:"var(--card)",stroke:"var(--red)","stroke-width":2.5*k},g);
-    const t=el("text",{x:p.cx,y:p.cy,"text-anchor":"middle","dominant-baseline":"central",class:"num",style:`font-size:${12*k}px`},g);t.textContent=i+1;
-    const go=()=>openPlace(it.target||it.p.id);
-    g.addEventListener("click",go);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});});
-}
-function mapList(svg,items){
-  const fig=svg.closest("figure");let ol=fig.nextElementSibling;
-  if(!items){if(ol&&ol.classList.contains("maplist"))ol.remove();return;}
-  if(!ol||!ol.classList.contains("maplist")){ol=document.createElement("ol");ol.className="maplist";fig.after(ol);}
-  ol.innerHTML=items.map((it,i)=>`<li><button data-place="${esc(it.target||it.p.id)}"><b>${i+1}</b><span>${esc(it.es)} <small>${esc(it.cn)}</small></span></button></li>`).join("");
+function baseMap(svg,m){svg.innerHTML="";const d=a=>a.map(p=>poly(m,p)).join("");el("path",{d:d(NEIGHBOR),fill:"var(--card)",opacity:.5},svg);el("path",{d:d(MX),fill:"var(--card)",stroke:"var(--line)","stroke-width":1.5,"stroke-linejoin":"round"},svg);}
+/* 首页地图总览：可以缩放的墨西哥全国图。
+   每个点有 minZ（放大到几倍才显示名字）：缩小时只看到墨西哥城、坎昆，放大后出现更多地点；名字互相挡住的先不显示，再放大就出来了。
+   圆点和字在屏幕上大小固定：u = 1 个屏幕像素等于多少地图单位，半径、字号都乘 u */
+const MINZ={sma:2,gto:2,puebla:2,tulum:2,chichen:2,bacalar:2,valle:2.5,playa:3,cozumel:3,coldlake:3,valquirico:3,teo:4,cholula:4,mujeres:4,xpark:5,grancenote:5,dosojos:5,antro:12,zocalo:12,frida:12,vasco:12};
+const mapAsp=()=>{const r=$("#mapMX").getBoundingClientRect();return r.width?r.height/r.width:mapV.m.H/mapV.m.W;};
+const MAXZ=150, esShort=p=>(p.es||p.cn).split("·")[0].trim();
+let mapV=null;
+function mapPoints(){
+  const ph=matchMedia("(max-width:620px)").matches;
+  const pts=[{id:"cdmx",label:ph?"墨西哥城":"墨西哥城 Ciudad de México",lon:-99.133,lat:19.433,minZ:1,maxZ:8,big:true}];
+  for(const p of all()) if(p.lat!=null) pts.push({id:p.id,label:ph?p.cn:p.cn+" "+esShort(p),lon:p.lon,lat:p.lat,minZ:p.id==="cancun"?1:(MINZ[p.id]||3),big:p.id==="cancun",place:true});
+  return pts.sort((x,y)=>x.minZ-y.minZ);
 }
 function drawMaps(){
-  const phone=isPhone();
-  const c=$("#mapC"),mc=mk(c,{w:-101.7,e:-97.7,s:18.45,n:21.35},640); baseMap(c,mc);
-  const home=mc.xy(-99.203,19.443),s=mc.xy(-100.744,20.914),g=mc.xy(-101.254,21.015),ctl=[(g[0]+home[0])/2-40,(g[1]+home[1])/2+30];
-  el("path",{d:`M${home}L${s}L${g}Q${ctl} ${home}`,fill:"none",stroke:"var(--teal)","stroke-width":2.5,"stroke-dasharray":"7 6"},c);
-  const ic=[];
-  for(const p of all()){ if(p.city||p.lat==null||p.region==="island") continue; const b=mc.b; if(p.lon<b.w||p.lon>b.e||p.lat<b.s||p.lat>b.n) continue; ic.push({p,es:esShort(p),cn:p.cn}); }
-  const cityN=P.filter(p=>p.city).length;
-  ic.push({p:{id:"antro",lat:19.43,lon:-99.16},es:"Ciudad de México",cn:`墨城市内 ${cityN} 处`});
-  const iy=all().filter(p=>p.region==="island"&&p.lat!=null).map(p=>({p,es:p.id==="xpark"?"Xcaret":esShort(p),cn:p.cn}));
-  const y=$("#mapY"),my=mk(y,{w:-91,e:-86.3,s:18.2,n:21.8},520); baseMap(y,my);
-  if(phone){numPins(c,mc,ic);numPins(y,my,iy);mapList(c,ic);mapList(y,iy);return;}
-  mapList(c);mapList(y);
-  const L={valle:{dx:-11},sma:{dy:-8},gto:{dx:-11,dy:-8},valquirico:{dx:-11,dy:-8},cholula:{dx:-11,dy:14},puebla:{dx:11,dy:6},teo:{dy:-4}};
-  for(const it of ic.slice(0,-1)) pin(c,mc,it.p,it.es,L[it.p.id]||{});
-  pin(c,mc,ic[ic.length-1].p,`Ciudad de México 市内 ${cityN} 处`,{r:9,dx:-13});
-  const LY={grancenote:{dx:-11,dy:-10},dosojos:{dx:11},cozumel:{dx:11,dy:4},cancun:{dx:-11,dy:12},mujeres:{dx:-11,dy:-6},playa:{dx:-11,dy:2},xpark:{dx:-11,dy:14},tulum:{dx:-11},chichen:{},bacalar:{dx:-11}};
-  for(const it of iy) pin(y,my,it.p,it.es,LY[it.p.id]||{dx:-11});
+  const svg=$("#mapMX"),m=mk(svg,{w:-117.6,e:-86.2,s:14.2,n:33},720); baseMap(svg,m);
+  svg.querySelectorAll("path").forEach(p=>p.setAttribute("vector-effect","non-scaling-stroke"));
+  el("g",{id:"mapPts"},svg);
+  mapV=mapV?{...mapV,m}:{m,z:1,cx:m.W/2,cy:m.H/2};
+  bindMap(svg); mapView();
 }
-
-$("#mapbox").addEventListener("toggle",()=>{if($("#mapbox").open)drawMaps();});
-let mapPhone=null;window.addEventListener("resize",()=>{if(!$("#mapbox").open)return;const ph=isPhone();if(ph||ph!==mapPhone)drawMaps();mapPhone=ph;});
+function mapView(){
+  const svg=$("#mapMX"),{m}=mapV,w=svg.getBoundingClientRect().width||m.W;
+  mapV.z=Math.min(MAXZ,Math.max(1,mapV.z));
+  const vw=m.W/mapV.z,vh=vw*mapAsp(),u=vw/w;
+  mapV.cx=Math.min(m.W-vw/2,Math.max(vw/2,mapV.cx)); mapV.cy=vh>=m.H?m.H/2:Math.min(m.H-vh/2,Math.max(vh/2,mapV.cy));
+  const x0=mapV.cx-vw/2,y0=mapV.cy-vh/2;
+  svg.setAttribute("viewBox",`${x0} ${y0} ${vw} ${vh}`); svg.classList.toggle("zoomed",mapV.z>1.01);
+  const g=$("#mapPts"); g.innerHTML="";
+  const dots=el("g",{},g),labs=el("g",{},g),boxes=[];
+  const hit=b=>boxes.some(c=>b.x<c.x+c.w&&b.x+b.w>c.x&&b.y<c.y+c.h&&b.y+b.h>c.y);
+  // 先画所有圆点并记下位置，再按顺序放地名：地名不能压住任何圆点，也不能和已放好的地名重叠
+  const shown=[];
+  for(const p of mapPoints()){
+    if(p.maxZ&&mapV.z>p.maxZ) continue; // 放大到能看清市内景点时，「墨西哥城」这个总标注就不要了
+    const [x,y]=m.xy(p.lon,p.lat),on=mapV.z>=p.minZ;
+    const d=el("g",{class:"pin"+(on?"":" off"),tabindex:0,role:"button","aria-label":p.label},dots);
+    el("circle",{cx:x,cy:y,r:(on?(p.big?8:6):3.5)*u,fill:"var(--red)",stroke:"var(--card)","stroke-width":(on?2:1)*u},d);
+    const go=()=>{ if(p.place) openPlace(p.id); else mapFit("city"); };
+    d.addEventListener("click",e=>{if(mapV.dragged){e.preventDefault();return;}go();});
+    d.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});
+    if(on){boxes.push({x:x-7*u,y:y-7*u,w:14*u,h:14*u});shown.push({p,x,y,go});}
+  }
+  for(const {p,x,y,go} of shown){
+    const t=el("text",{class:p.big?"big":"",style:`font-size:${13*u}px;stroke-width:${3*u}px`},labs);t.textContent=p.label;
+    t.addEventListener("click",go);
+    let placed=false;
+    for(const [dx,dy,an] of [[10,4.5,"start"],[-10,4.5,"end"],[0,-11,"middle"],[0,19,"middle"]]){
+      t.setAttribute("x",x+dx*u); t.setAttribute("y",y+dy*u); t.setAttribute("text-anchor",an);
+      const b=t.getBBox(),pad=2*u,box={x:b.x-pad,y:b.y-pad,w:b.width+2*pad,h:b.height+2*pad};
+      if(box.x<x0||box.x+box.w>x0+vw||box.y<y0||box.y+box.h>y0+vh||(!p.big&&hit(box))) continue; // 墨西哥城、坎昆一定要显示
+      boxes.push(box); placed=true; break;
+    }
+    if(!placed) t.remove();
+  }
+}
+function mapZoom(f,clientX,clientY){
+  const r=$("#mapMX").getBoundingClientRect(),{m}=mapV,a=mapAsp(),vw=m.W/mapV.z,vh=vw*a;
+  const px=clientX==null?.5:(clientX-r.left)/r.width,py=clientY==null?.5:(clientY-r.top)/r.height;
+  const mx=mapV.cx-vw/2+px*vw,my=mapV.cy-vh/2+py*vh,z=Math.min(MAXZ,Math.max(1,mapV.z*f)),nw=m.W/z,nh=nw*a;
+  mapV.z=z; mapV.cx=mx-px*nw+nw/2; mapV.cy=my-py*nh+nh/2; mapView();
+}
+function mapZoomTo(x,y,z){mapV.z=z;mapV.cx=x;mapV.cy=y;mapView();}
+/* 图下面的快捷按钮：把这一组地点刚好框进图里（四周留白） */
+const MAP_JUMP={near:p=>p.region==="nearby"||p.region==="cdmx",city:p=>p.city,yuc:p=>p.region==="island"};
+function mapFit(key){
+  const {m}=mapV; if(!MAP_JUMP[key]){mapZoomTo(m.W/2,m.H/2,1);return;}
+  const xy=all().filter(p=>p.lat!=null&&MAP_JUMP[key](p)).map(p=>m.xy(p.lon,p.lat)),xs=xy.map(q=>q[0]),ys=xy.map(q=>q[1]);
+  const x1=Math.min(...xs),x2=Math.max(...xs),y1=Math.min(...ys),y2=Math.max(...ys);
+  mapZoomTo((x1+x2)/2,(y1+y2)/2,Math.min(MAXZ,m.W/((x2-x1)*1.8||1),m.W*mapAsp()/((y2-y1)*1.6||1)));
+}
+/* 操作：+ / − 按钮和图下的快捷按钮；双击放大；电脑上拖动平移、按住 Ctrl 滚轮缩放（触控板双指捏合也算）；
+   手机上双指缩放和移动，放大以后单指也能拖。拖动过就不算点击 */
+function bindMap(svg){
+  if(svg.dataset.bound) return; svg.dataset.bound=1;
+  $("#mapbox").addEventListener("click",e=>{const b=e.target.closest("button[data-mz]");if(!b)return;
+    if(b.dataset.mz==="in")mapZoom(2);else if(b.dataset.mz==="out")mapZoom(.5);else mapFit(b.dataset.mz);});
+  svg.addEventListener("dblclick",e=>{e.preventDefault();mapZoom(2,e.clientX,e.clientY);});
+  svg.addEventListener("wheel",e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();mapZoom(Math.exp(-e.deltaY/200),e.clientX,e.clientY);},{passive:false});
+  const unit=()=>mapV.m.W/mapV.z/svg.getBoundingClientRect().width;
+  let drag=null;
+  svg.addEventListener("pointerdown",e=>{if(e.pointerType!=="mouse"||e.button!==0)return;drag={x:e.clientX,y:e.clientY};mapV.dragged=false;});
+  window.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+    if(!mapV.dragged&&Math.hypot(dx,dy)<4)return;mapV.dragged=true;const u=unit();mapV.cx-=dx*u;mapV.cy-=dy*u;drag={x:e.clientX,y:e.clientY};mapView();});
+  window.addEventListener("pointerup",()=>{drag=null;setTimeout(()=>{mapV.dragged=false;},0);});
+  let tch=null;
+  const mid=ts=>({x:(ts[0].clientX+ts[1].clientX)/2,y:(ts[0].clientY+ts[1].clientY)/2,d:Math.hypot(ts[0].clientX-ts[1].clientX,ts[0].clientY-ts[1].clientY)});
+  svg.addEventListener("touchstart",e=>{mapV.dragged=false;tch=e.touches.length>1?mid(e.touches):{x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
+  svg.addEventListener("touchmove",e=>{if(!tch)return;
+    if(e.touches.length>1){e.preventDefault();const n=mid(e.touches);if(!tch.d){tch=n;return;}
+      const u=unit(),f=n.d/tch.d;mapV.cx-=(n.x-tch.x)*u;mapV.cy-=(n.y-tch.y)*u;mapV.dragged=true;tch=n;mapZoom(f,n.x,n.y);return;}
+    if(mapV.z<=1.01)return;e.preventDefault();const t=e.touches[0],u=unit();
+    if(!mapV.dragged&&Math.hypot(t.clientX-tch.x,t.clientY-tch.y)<6)return;
+    mapV.dragged=true;mapV.cx-=(t.clientX-tch.x)*u;mapV.cy-=(t.clientY-tch.y)*u;tch={x:t.clientX,y:t.clientY};mapView();},{passive:false});
+  svg.addEventListener("touchend",e=>{tch=e.touches.length>1?mid(e.touches):e.touches.length?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;});
+}
+document.fonts&&document.fonts.ready.then(()=>{if(mapV)mapView();}); // 网页字体加载完后字宽会变，重新摆一次地名
+let mapW=0;window.addEventListener("resize",()=>{const w=$("#mapMX").getBoundingClientRect().width;if(w&&w!==mapW&&mapV){mapW=w;mapView();}});
 /* 示意图在手机上会整体缩小：把「缩小了几倍」存进 --k，CSS 据此放大字，保证显示出来不小于 12px；
    字放大后靠边的地名可能超出图框，再把它们往里推一点 */
 function fitMapText(){document.querySelectorAll(".loopmap svg").forEach(svg=>{
