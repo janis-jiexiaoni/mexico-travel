@@ -70,7 +70,7 @@ function card(p){
 }
 function render(){
   const items=all();
-  const tabs=[["all","全部"],["island","海岛游"],["nearby","周边 2 天游"],["cdmx","1 天墨城 CDMX"]];
+  const tabs=[["all","全部"],["island","海岛游 5–7 天"],["nearby","墨城周边 2–3 天"],["cdmx","墨城内 1 日游"]];
   $("#pills").innerHTML=tabs.map(([k,t])=>`<button class="pill" data-f="${k}" aria-pressed="${filter===k}">${t}</button>`).join("");
   const done=items.filter(p=>TABS.every(([k])=>hasTab(p,k))).length;
   $("#stat").innerHTML=`已写好 <b>${done}</b> / ${items.length} 个地点`;

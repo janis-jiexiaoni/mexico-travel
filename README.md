@@ -10,9 +10,9 @@
 
 | 分类 | 地点 |
 |---|---|
-| **海岛游**（加勒比海和尤卡坦半岛） | 坎昆（Cancún）、女人岛（Isla Mujeres）、科苏梅尔岛（Isla Cozumel）、普拉亚德尔卡门（Playa del Carmen）、图卢姆（Tulum）、奇琴伊察（Chichén Itzá）、X 系列乐园（Xcaret · Xel-Há · Xplor）、大天然井（Gran Cenote）、双眼天然井（Cenote Dos Ojos）、巴卡拉尔七色湖（Laguna de Bacalar） |
-| **周边 2 天游** | 圣米格尔德阿连德（San Miguel de Allende）、瓜纳华托（Guanajuato）、巴耶德布拉沃（Valle de Bravo）、瓦尔基里科意大利小镇（Val'Quirico）、乔卢拉（Cholula）、普埃布拉（Puebla） |
-| **1 天墨城** | 国家人类学博物馆（Museo Nacional de Antropología）、特奥蒂瓦坎日月金字塔（Teotihuacán）、宪法广场与老城区（Zócalo · Centro Histórico）、弗里达蓝房子（Casa Azul · Museo Frida Kahlo）、瓦斯孔塞洛斯图书馆（Biblioteca Vasconcelos）、冷水湖（Las Estacas） |
+| **海岛游 5–7 天**（加勒比海和尤卡坦半岛） | 坎昆（Cancún）、女人岛（Isla Mujeres）、科苏梅尔岛（Isla Cozumel）、普拉亚德尔卡门（Playa del Carmen）、图卢姆（Tulum）、奇琴伊察（Chichén Itzá）、X 系列乐园（Xcaret · Xel-Há · Xplor）、大天然井（Gran Cenote）、双眼天然井（Cenote Dos Ojos）、巴卡拉尔七色湖（Laguna de Bacalar） |
+| **墨城周边 2–3 天** | 圣米格尔德阿连德（San Miguel de Allende）、瓜纳华托（Guanajuato）、巴耶德布拉沃（Valle de Bravo）、瓦尔基里科意大利小镇（Val'Quirico）、乔卢拉（Cholula）、普埃布拉（Puebla） |
+| **墨城内 1 日游** | 国家人类学博物馆（Museo Nacional de Antropología）、特奥蒂瓦坎日月金字塔（Teotihuacán）、宪法广场与老城区（Zócalo · Centro Histórico）、弗里达蓝房子（Casa Azul · Museo Frida Kahlo）、瓦斯孔塞洛斯图书馆（Biblioteca Vasconcelos）、冷水湖（Las Estacas） |
 
 ## 每个地点有什么
 

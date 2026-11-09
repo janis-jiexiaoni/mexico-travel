@@ -4,7 +4,7 @@
    desc（卡片上一句话介绍）、g（Google 地图：G(评分, 评论数, place_id, 搜索词)）、gnote（评分对应的具体地点，可选）、
    mq（嵌入地图用的搜索词，可选，默认用西语名）、zoom（嵌入地图缩放，默认 13）、
    site（官网）、city（true = 墨城市内，地图总览里合并显示）。 */
-const REG={island:{name:"海岛游",sub:"加勒比海（Mar Caribe）与尤卡坦半岛（Península de Yucatán），从墨城（Ciudad de México）飞坎昆（Cancún）约 2.5 小时"},nearby:{name:"周边 2 天游",sub:"从墨西哥城（Ciudad de México）开车或坐大巴"},cdmx:{name:"1 天墨城 · CDMX",sub:"市内和当天能来回的地方"},other:{name:"其他",sub:"从帖子导入的地点"}};
+const REG={island:{name:"海岛游 5–7 天",sub:"加勒比海（Mar Caribe）与尤卡坦半岛（Península de Yucatán），从墨城（Ciudad de México）飞坎昆（Cancún）约 2.5 小时"},nearby:{name:"墨城周边 2–3 天",sub:"从墨西哥城（Ciudad de México）开车或坐大巴"},cdmx:{name:"墨城内 1 日游",sub:"市内和当天能来回的地方"},other:{name:"其他",sub:"从帖子导入的地点"}};
 const G=(r,n,pid,q)=>({r,n,pid,q});
 const P=[
  {id:"bacalar",region:"island",kind:"湖泊",motif:"lake",area:"金塔纳罗奥州（Quintana Roo）",cn:"巴卡拉尔七色湖",es:"Laguna de Bacalar",lat:18.767,lon:-88.307,desc:"淡水泻湖，水色分好几层蓝，适合划皮划艇、慢慢待两三天。",g:G(4.8,1441,"ChIJ1ZGLV5etW48R5whXdG-ckjM","Bacalar Lagoon"),site:"https://caribemexicano.travel/destinos/bacalar"},
